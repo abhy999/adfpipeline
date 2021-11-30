@@ -1,0 +1,103 @@
+{
+	"name": "PL_Http_to_Adls",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data from http to adls",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "suresh12345/AzureDataEngineering_Batch/main/ecdc_data/testing.csv"
+					},
+					{
+						"name": "Destination",
+						"value": "outputcontainerazgen2/population/pop_by_age.tsv"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"additionalColumns": [
+							{
+								"name": "sourcefilename",
+								"value": "$$FILEPATH"
+							}
+						],
+						"storeSettings": {
+							"type": "HttpReadSettings",
+							"maxConcurrentConnections": 2,
+							"requestMethod": "GET"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "PreserveHierarchy"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".csv"
+						}
+					},
+					"enableStaging": false,
+					"dataIntegrationUnits": 2,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_httpdataset",
+						"type": "DatasetReference",
+						"parameters": {
+							"baseUrl": {
+								"value": "@pipeline().parameters.Sourcebaseurl",
+								"type": "Expression"
+							},
+							"relativeUrl": {
+								"value": "@pipeline().parameters.Sourcerelativeurl",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_outputcontainer_multiplefile",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"parameters": {
+			"Sourcebaseurl": {
+				"type": "string"
+			},
+			"Sourcerelativeurl": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-11-21T12:01:39Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

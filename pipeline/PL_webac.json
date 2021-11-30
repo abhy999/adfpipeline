@@ -1,0 +1,27 @@
+{
+	"name": "PL_webac",
+	"properties": {
+		"activities": [
+			{
+				"name": "Web1",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://dummy.restapiexample.com/api/v1/employee/1",
+					"method": "GET"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2021-11-27T05:15:45Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

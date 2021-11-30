@@ -1,0 +1,122 @@
+{
+	"name": "PL_Http_to_Adls_variable",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data from http to adls",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Set variable1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "suresh12345/AzureDataEngineering_Batch/main/ecdc_data/testing.csv"
+					},
+					{
+						"name": "Destination",
+						"value": "outputcontainerazgen2/population/pop_by_age.tsv"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"additionalColumns": [
+							{
+								"name": "sourcefilename",
+								"value": "$$FILEPATH"
+							}
+						],
+						"storeSettings": {
+							"type": "HttpReadSettings",
+							"maxConcurrentConnections": 2,
+							"requestMethod": "GET"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "PreserveHierarchy"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".csv"
+						}
+					},
+					"enableStaging": false,
+					"dataIntegrationUnits": 2,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_httpdataset",
+						"type": "DatasetReference",
+						"parameters": {
+							"baseUrl": {
+								"value": "@variables('Sourcebaseurl')",
+								"type": "Expression"
+							},
+							"relativeUrl": {
+								"value": "@variables('Sourcerelativeurl')",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_outputcontainer_multiplefile",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "Sourcerelativeurl",
+					"value": "suresh12345/AzureDataEngineering_Batch/main/ecdc_data/hospital_admissions.csv"
+				}
+			}
+		],
+		"variables": {
+			"Sourcebaseurl": {
+				"type": "String",
+				"defaultValue": "https://raw.githubusercontent.com"
+			},
+			"Sourcerelativeurl": {
+				"type": "String",
+				"defaultValue": "suresh12345/AzureDataEngineering_Batch/main/ecdc_data/case_deaths_uk_ind_only.csv"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-11-21T19:07:28Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

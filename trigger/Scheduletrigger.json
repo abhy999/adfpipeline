@@ -1,0 +1,24 @@
+{
+	"name": "Scheduletrigger",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "PL_blobtoadls",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Minute",
+				"interval": 2,
+				"startTime": "2021-11-20T17:52:00Z",
+				"timeZone": "UTC"
+			}
+		}
+	}
+}

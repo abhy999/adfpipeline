@@ -1,0 +1,42 @@
+{
+	"name": "DF_TotalNoEmp",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "employeeDS",
+						"type": "DatasetReference"
+					},
+					"name": "empsorce"
+				},
+				{
+					"dataset": {
+						"referenceName": "dept_dS",
+						"type": "DatasetReference"
+					},
+					"name": "deptsorcc"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_output_empdept",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "AggregateonEmp"
+				},
+				{
+					"name": "Join1"
+				}
+			],
+			"script": "source(output(\n\t\tempid as string,\n\t\tname as string,\n\t\tcountry as string,\n\t\tdepartment as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> empsorce\nsource(output(\n\t\tdepid as string,\n\t\tdepname as string,\n\t\tProp_2 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> deptsorcc\nempsorce aggregate(groupBy(department),\n\ttotalemp = count(empid)) ~> AggregateonEmp\nAggregateonEmp, deptsorcc join(department == depid,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> Join1\nJoin1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['totalemp'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tpartitionBy('hash', 1)) ~> sink1"
+		}
+	}
+}

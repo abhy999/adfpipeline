@@ -1,0 +1,32 @@
+{
+	"name": "DF_filterpayrollemp",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "employeeDS",
+						"type": "DatasetReference"
+					},
+					"name": "employee"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_output_empdept",
+						"type": "DatasetReference"
+					},
+					"name": "sinkpayroll"
+				}
+			],
+			"transformations": [
+				{
+					"name": "FilterPAyroll"
+				}
+			],
+			"script": "source(output(\n\t\tempid as string,\n\t\tname as string,\n\t\tcountry as string,\n\t\tdepartment as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> employee\nemployee filter(equals(department,'3')) ~> FilterPAyroll\nFilterPAyroll sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['payroll'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tpartitionBy('hash', 1)) ~> sinkpayroll"
+		}
+	}
+}
